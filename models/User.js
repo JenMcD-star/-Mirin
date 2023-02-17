@@ -1,6 +1,8 @@
 const mongoose = require('mongoose'),
     Schema = mongoose.Schema
 
+const bcrypt = require('bcryptjs')
+
 const UserSchema = new Schema({  name: {
     type: String,
     required: [true, 'Please provide name'],
@@ -23,7 +25,27 @@ const UserSchema = new Schema({  name: {
   },
 })
 
+UserSchema.pre('save', async function(next) {
+    const user = this;
+
+// only hash the password if it has been modified (or is new)
+if (!user.isModified('password')) return next();
+
+// generate a salt
+const salt = await bcrypt.genSalt(10);
+this.password = await bcrypt.hash(this.password, salt)
+next()
+
+});
 
 
+;
+
+UserSchema.methods.comparePassword = function(candidatePassword, cb) {
+    bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
+        if (err) return cb(err);
+        cb(null, isMatch);
+    });
+};
 
 module.exports = mongoose.model('User', UserSchema);
