@@ -41,16 +41,14 @@ next()
 
 
 UserSchema.methods.createJWT = function () {
-  return jwt.sign({userId: this._id, name: this.name }, 'jwtSecret', {
-    expiresIn: '30d'
+  return jwt.sign({userId: this._id, name: this.name }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_LIFETIME,
   })
 }
 
-UserSchema.methods.comparePassword = function(candidatePassword, cb) {
-    bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
-        if (err) return cb(err);
-        cb(null, isMatch);
-    });
-};
+UserSchema.methods.comparePassword = async function (canditatePassword) {
+  const isMatch = bcrypt.compare(canditatePassword, this.password)
+  return isMatch
+}
 
 module.exports = mongoose.model('User', UserSchema);
