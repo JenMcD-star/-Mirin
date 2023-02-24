@@ -3,6 +3,7 @@ const { StatusCodes } = require('http-status-codes')
 const { BadRequestError, NotFoundError } = require('../errors')
 
 const getAllActivities = async (req, res) => {
+
     const activities = await Activity.find({ createdBy: req.user.userId }).sort('createdAt')
     res.status(StatusCodes.OK).json({ activities, count: activities.length })
 }
@@ -23,6 +24,7 @@ const getActivity = async (req, res) => {
     }
     res.status(StatusCodes.OK).json({ activty })
 }
+
 
 const createActivity = async (req, res) => {
     req.body.createdBy = req.user.userId
@@ -62,6 +64,7 @@ const deleteActivity = async (req, res) => {
         throw new NotFoundError(`No activity with id ${activityId}`)
     }
     res.status(StatusCodes.OK).send()
+
 
 }
 
