@@ -63,8 +63,7 @@ const deleteActivity = async (req, res) => {
     if (!activity) {
         throw new NotFoundError(`No activity with id ${activityId}`)
     }
-    res.status(StatusCodes.OK).send()
-
+    res.status(StatusCodes.OK).json({msg: "The entry was deleted."})
 
 }
 

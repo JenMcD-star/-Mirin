@@ -2,10 +2,9 @@ const mongoose = require('mongoose')
 
 
 const ActivitySchema = new mongoose.Schema({
-  name: {
+  activityName: {
     type: String,
     maxlength: 150,
-    minlength: 3,
     default: 'Session'
   },
   date: {
