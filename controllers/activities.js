@@ -15,21 +15,21 @@ const getActivity = async (req, res) => {
         params: { id: activityId },
     } = req
 
-    const activty = await Activity.findOne({
+    const activity = await Activity.findOne({
         _id: activityId,
         createdBy: userId,
     })
-    if (!activty) {
+    if (!activity) {
         throw new NotFoundError(`No activity with id ${activityId}`)
     }
-    res.status(StatusCodes.OK).json({ activty })
+    res.status(StatusCodes.OK).json({ activity })
 }
 
 
 const createActivity = async (req, res) => {
     req.body.createdBy = req.user.userId
-    const activty = await Activity.create(req.body)
-    res.status(StatusCodes.CREATED).json({ activty })
+    const activity = await Activity.create(req.body)
+    res.status(StatusCodes.CREATED).json({ activity })
 }
 
 const updateActivity = async (req, res) => {
