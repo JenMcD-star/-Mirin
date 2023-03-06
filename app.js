@@ -43,9 +43,11 @@ app.use(cors());
 app.use(xss());
 
 
-app.get('/', (req, res) => {
-  res.send('activities api')
-})
+//app.get('/', (req, res) => {
+//  res.send('activities api')
+//})
+
+app.use(express.static('public'))
 
 //routes
 app.use('/api/v1/auth', authRouter)
