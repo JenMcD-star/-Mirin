@@ -43,7 +43,7 @@ img {
     
 }
 
-#activities {
+#activities, #edit-activity {
     z-index: 1;
     border: pink;
     background-color: white;
