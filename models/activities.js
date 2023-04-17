@@ -5,7 +5,8 @@ const ActivitySchema = new mongoose.Schema({
   activityName: {
     type: String,
     maxlength: 150,
-    default: 'Session'
+    default: 'Session',
+    required: [true, 'Please provide activity name']
   },
   date: {
     type: Date,
