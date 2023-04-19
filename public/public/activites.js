@@ -76,7 +76,6 @@ document.addEventListener("DOMContentLoaded", () => {
     token = sessionStorage.getItem("token");
     if (token) {
       //if the user is logged in
-      header.innerHTML = 'Home';
       totals.style.display = "block";
       logoff.style.display = "block";
       const count = await buildActivitysTable(
