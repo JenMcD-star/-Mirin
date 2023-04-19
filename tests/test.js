@@ -46,4 +46,15 @@ describe("Activities", () => {
                 });
         });
     })
+
+    it("should create an activity entry with valid input", (done) => {
+        chai
+            .request(app)
+            .post("/api/v1/people")
+            .send({ activityName: "Lift Test", liftType: 'Core', weight: 1, reps: 1 })
+            .end((err, res) => {
+                res.should.have.status(201);
+                done();
+            });
+    })
 })
