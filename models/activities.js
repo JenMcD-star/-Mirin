@@ -14,9 +14,9 @@ const ActivitySchema = new mongoose.Schema({
   },
   liftType: {
     type: String,
+    required: [true, 'Please enter lift type'],
     enum: {
       values: ['Ancillary', 'Supplemental', 'Core'],
-      message: '{VALUE} is not supported',
     },
   },
   weight: {

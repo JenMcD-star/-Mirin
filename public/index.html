@@ -12,12 +12,11 @@
 <body>
     <h1 id="header">'Mirin</h1>
 
-    <div id="left"> <img src="front-page.jpg" alt="row of colorful kettlebells"> </div>
+    <div id="left"> <img id= "front-page" src="front-page.jpg" alt="row of colorful kettlebells"> </div>
 
     <div id="right">
         <h2 id="subheader">Log In Or Register</h2>
-        <button type="button" id="logoff" style="display:none;">logoff</button>
-
+        <button type="button" id="logoff" style="display:none;">Sign Out</button>        
         <div id="content">
             <hr>
             <p id="message"></p>
@@ -64,6 +63,13 @@
                 <button type="button" id="register-cancel">cancel</button>
             </form>
         </div>
+        <div id = "totals" style="display:none;">Stats
+            <table id="totals-table">
+                <th>Weekly</th>
+                <th>Yearly</th>
+                <th>All-Time</th>
+            </table></div>
+
 
         </div>
         <div id="activities" style="display:none;">

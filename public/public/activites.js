@@ -58,7 +58,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const activitiesTableHeader = document.getElementById("activities-table-header");
   const addActivity = document.getElementById("add-activity");
   const editActivity = document.getElementById("edit-activity");
-  const deleteActivity = document.getElementById("delete-activity")
   const activityName = document.getElementById("activity-name")
   const reps = document.getElementById("reps");
   const weight = document.getElementById("weight")
@@ -78,6 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (token) {
       //if the user is logged in
       header.innerHTML = 'Home';
+      totals.style.display = "block";
       logoff.style.display = "block";
       const count = await buildActivitysTable(
         activitiesTable,
@@ -154,7 +154,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (response.status === 200) {
           
           header.innerHTML = 'Home'
-          subheader.textContent = `Logon successful.  Welcome ${data.user.name}!`;
+          subheader.textContent = `Welcome ${data.user.name}!`;
           left.display = "hidden"
           token = data.token;
           sessionStorage.setItem("token", token);
@@ -189,7 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
           });
           const data = await response.json();
           if (response.status === 201) {
-            subheader.textContent = `Registration successful.  Welcome ${data.user.name}!`;
+            subheader.textContent = `Welcome ${data.user.name}!`;
             token = data.token;
             sessionStorage.setItem("token", token);
             showing.style.display = "none";
