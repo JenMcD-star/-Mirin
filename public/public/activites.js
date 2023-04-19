@@ -58,7 +58,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const activitiesTableHeader = document.getElementById("activities-table-header");
   const addActivity = document.getElementById("add-activity");
   const editActivity = document.getElementById("edit-activity");
-  const deleteActivity = document.getElementById("delete-activity")
   const activityName = document.getElementById("activity-name")
   const reps = document.getElementById("reps");
   const weight = document.getElementById("weight")
@@ -66,6 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const addingActivity = document.getElementById("adding-activity");
   const activitiesMessage = document.getElementById("activities-message");
   const editCancel = document.getElementById("edit-cancel");
+  const header = document.getElementById("header")
 
   // section 2 
 
@@ -73,9 +73,11 @@ document.addEventListener("DOMContentLoaded", () => {
   let token = null;
   document.addEventListener("startDisplay", async () => {
     showing = logonRegister;
-    token = localStorage.getItem("token");
+    token = sessionStorage.getItem("token");
     if (token) {
       //if the user is logged in
+      header.innerHTML = 'Home';
+      totals.style.display = "block";
       logoff.style.display = "block";
       const count = await buildActivitysTable(
         activitiesTable,
@@ -110,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
       message.textContent = "";
     }
     if (e.target === logoff) {
-      localStorage.removeItem("token");
+      sessionStorage.removeItem("token");
       token = null;
       showing.style.display = "none";
       logonRegister.style.display = "block";
@@ -150,9 +152,12 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         const data = await response.json();
         if (response.status === 200) {
-          message.textContent = `Logon successful.  Welcome ${data.user.name}`;
+          
+          header.innerHTML = 'Home'
+          subheader.textContent = `Welcome ${data.user.name}!`;
+          left.display = "hidden"
           token = data.token;
-          localStorage.setItem("token", token);
+          sessionStorage.setItem("token", token);
           showing.style.display = "none";
           thisEvent = new Event("startDisplay");
           email.value = "";
@@ -184,9 +189,9 @@ document.addEventListener("DOMContentLoaded", () => {
           });
           const data = await response.json();
           if (response.status === 201) {
-            message.textContent = `Registration successful.  Welcome ${data.user.name}`;
+            subheader.textContent = `Welcome ${data.user.name}!`;
             token = data.token;
-            localStorage.setItem("token", token);
+            sessionStorage.setItem("token", token);
             showing.style.display = "none";
             thisEvent = new Event("startDisplay");
             document.dispatchEvent(thisEvent);

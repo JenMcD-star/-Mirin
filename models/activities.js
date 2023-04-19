@@ -5,7 +5,8 @@ const ActivitySchema = new mongoose.Schema({
   activityName: {
     type: String,
     maxlength: 150,
-    default: 'Session'
+    default: 'Session',
+    required: [true, 'Please provide activity name']
   },
   date: {
     type: Date,
@@ -13,9 +14,9 @@ const ActivitySchema = new mongoose.Schema({
   },
   liftType: {
     type: String,
+    required: [true, 'Please enter lift type'],
     enum: {
       values: ['Ancillary', 'Supplemental', 'Core'],
-      message: '{VALUE} is not supported',
     },
   },
   weight: {
