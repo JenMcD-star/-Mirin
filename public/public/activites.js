@@ -9,7 +9,6 @@ async function buildActivitysTable(activitiesTable, activitiesTableHeader, token
     });
     const data = await response.json();
     var children = [activitiesTableHeader];
-    let total = [];
     if (response.status === 200) {
       if (data.count === 0) {
         activitiesTable.replaceChildren(...children); // clear this for safety
@@ -23,15 +22,60 @@ async function buildActivitysTable(activitiesTable, activitiesTableHeader, token
           rowEntry.innerHTML = rowHTML;
           children.push(rowEntry);
         
-        total.push(data.activities[i].weight)
         }
 
-        let sum = total.reduce(function (a, b) {
-          return a + b;
-        }, 0);
-        console.log(sum)
+       
 
         activitiesTable.replaceChildren(...children);
+      }
+      return data.count;
+    } else {
+      message.textContent = data.msg;
+      return 0;
+    }
+  } catch (err) {
+    message.textContent = "A communication error occurred.";
+    return 0;
+  }
+}
+
+
+async function buildtotalsTable(totalsTable, totalTableHeader, token, message) {
+  try {
+    const response = await fetch("/api/v1/activities", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await response.json();
+    var children = [totalTableHeader];
+    let total = [];
+    if (response.status === 200) {
+      if (data.count === 0) {
+        totalsTable.replaceChildren(...children); // clear this for safety
+        return 0;
+      } else {
+        for (let i = 0; i < data.activities.length; i++) {
+          let weight = `${data.activities[i].weight}`;
+          let reps = data.activities[i].reps;
+          let result = weight*reps
+          
+        total.push(result)
+        }
+
+        let totalResult = total.reduce(function (a, b) {
+          return a + b;
+        }, 0);
+
+        
+
+        console.log(totalResult)
+        let weekly = (totalResult/7);
+        console.log(weekly)
+        children.push(weekly.toFixed(2))
+        totalsTable.replaceChildren(...children);
       }
       return data.count;
     } else {
@@ -66,7 +110,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const activities = document.getElementById("activities");
   const activitiesTable = document.getElementById("activities-table");
   const activitiesTableHeader = document.getElementById("activities-table-header");
-  const allTimeTotal = document.getElementById("allTime")
+  const totalsTable = document.getElementById("totals-table")
+  const totalsTableHeader = document.getElementById("totals-table-header")
   const addActivity = document.getElementById("add-activity");
   const editActivity = document.getElementById("edit-activity");
   const activityName = document.getElementById("activity-name")
@@ -92,6 +137,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const count = await buildActivitysTable(
         activitiesTable,
         activitiesTableHeader,
+        token,
+        message
+      )
+      
+      await buildtotalsTable(
+        totalsTable,
+        totalsTableHeader,
         token,
         message
       );
