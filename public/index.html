@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="styles.css">
     <title>'Mirin</title>
 </head>
@@ -111,9 +111,16 @@
             </div>
             <div id="totals" style="display:none;">Stats
                 <table id="totals-table">
-                    <th>Weekly</th>
-                    <th>Yearly</th>
-                    <th>All-Time</th>
+                    <tr>
+                        <th id="weekly">Weekly Average</th>
+                    </tr>
+                    <tr>
+                        <th id="yearly">Yearly</th>
+                    </tr>
+                    <tr>
+                        <th>All-Time</th>
+                        <td id="allTime"></td>
+                    </tr>
                 </table>
             </div>
 

@@ -9,6 +9,7 @@ async function buildActivitysTable(activitiesTable, activitiesTableHeader, token
     });
     const data = await response.json();
     var children = [activitiesTableHeader];
+    let total = [];
     if (response.status === 200) {
       if (data.count === 0) {
         activitiesTable.replaceChildren(...children); // clear this for safety
@@ -21,7 +22,15 @@ async function buildActivitysTable(activitiesTable, activitiesTableHeader, token
           let rowEntry = document.createElement("tr");
           rowEntry.innerHTML = rowHTML;
           children.push(rowEntry);
+        
+        total.push(data.activities[i].weight)
         }
+
+        let sum = total.reduce(function (a, b) {
+          return a + b;
+        }, 0);
+        console.log(sum)
+
         activitiesTable.replaceChildren(...children);
       }
       return data.count;
@@ -34,6 +43,7 @@ async function buildActivitysTable(activitiesTable, activitiesTableHeader, token
     return 0;
   }
 }
+
 
 document.addEventListener("DOMContentLoaded", () => {
   const logoff = document.getElementById("logoff");
@@ -56,6 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const activities = document.getElementById("activities");
   const activitiesTable = document.getElementById("activities-table");
   const activitiesTableHeader = document.getElementById("activities-table-header");
+  const allTimeTotal = document.getElementById("allTime")
   const addActivity = document.getElementById("add-activity");
   const editActivity = document.getElementById("edit-activity");
   const activityName = document.getElementById("activity-name")
@@ -93,6 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       activities.style.display = "block";
       showing = activities;
+
     } else {
       logonRegister.style.display = "block";
     }
@@ -111,6 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
       message.textContent = "";
     }
     if (e.target === logoff) {
+      totals.style.display = "none"
       sessionStorage.removeItem("token");
       token = null;
       showing.style.display = "none";
@@ -152,7 +165,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const data = await response.json();
         if (response.status === 200) {
           
-          header.innerHTML = 'Home'
           subheader.textContent = `Welcome ${data.user.name}!`;
           left.display = "hidden"
           token = data.token;

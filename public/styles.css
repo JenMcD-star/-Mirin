@@ -1,28 +1,39 @@
 body {
     max-width: 100%;
-    background-color: #FC4C02;
-
+    background-image: url(front-page.jpg);
+    background-size: cover;
 }
 
-@media(max-width: 768px) {
-    body {
+@media only screen and (max-width: 950px) {
+    #header {
+        text-align: center;
+    }
+    .content {
+        display: flex;
         flex-direction: column;
+        align-items: center;
+
     }
 
-    #right {
-        width: 100%;
-        overflow: scroll;
-    }
-
+    #right,
     #left {
-        width: 100%;
         overflow: scroll;
+        width: 100%;
+
+    }
+
+    #activities-table,
+    #totals {
+        overflow: scroll;
+    }
+
+    img {
+        display: none;
     }
 }
 
 #header {
     color: white;
-    text-align: left;
     margin-left: 1%;
     margin: 0;
     width: 100%;
@@ -32,30 +43,30 @@ body {
 
 .content {
     display: flex;
-    flex-direction: row;
     margin-top: 0;
     height: 100vh;
+    margin: 1%;
 }
 
 #right {
+    margin: 1%;
     background-color: #EADDCA;
-    right: 5px;
     width: 50%;
-    height: 113%;
     padding: 1%;
     text-align: center;
-    
+
 }
 
 #left {
-    background-color: white;
+    margin: 1%;
     width: 50%;
-    height: 100%;
+
 }
 
 img {
     max-width: 100%;
-    height: 100%;
+    ;
+    max-height: 100%;
 
 }
 
@@ -70,13 +81,14 @@ img {
 #activities,
 #edit-activity {
     background-color: white;
+    margin: 1%;
 }
 
 #activities-table {
-    margin: 10px;
+    margin-top: -17px;
     padding: 10px;
     table-layout: fixed;
-    width: 100%;
+    max-width: 100%;
     text-align: center;
     margin-bottom: 20px;
 }
@@ -88,10 +100,15 @@ img {
     margin: 20px auto;
     table-layout: fixed;
 
+}
 
+#totals-table {
+    table-layout: fixed;
+    width: 100%;
 }
 
 th {
+    width: 25%;
     padding: 15px;
     text-align: center;
 
