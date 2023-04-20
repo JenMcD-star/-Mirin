@@ -21,10 +21,8 @@ async function buildActivitysTable(activitiesTable, activitiesTableHeader, token
           let rowEntry = document.createElement("tr");
           rowEntry.innerHTML = rowHTML;
           children.push(rowEntry);
-        
-        }
 
-       
+        }
 
         activitiesTable.replaceChildren(...children);
       }
@@ -60,24 +58,28 @@ async function buildtotalsTable(totalsTable, totalTableHeader, token, message) {
         for (let i = 0; i < data.activities.length; i++) {
           let weight = `${data.activities[i].weight}`;
           let reps = data.activities[i].reps;
-          let result = weight*reps
-          
-        total.push(result)
+          let result = weight * reps;
+          total.push(result)
         }
 
         let totalResult = total.reduce(function (a, b) {
           return a + b;
         }, 0);
 
-        
+        let weekly = (totalResult / 7);
+        let yearly = (totalResult / 365)
 
-        console.log(totalResult)
-        let weekly = (totalResult/7);
-        console.log(weekly)
-        children.push(weekly.toFixed(2))
+        let rowHTML = `<td>${weekly.toFixed(2)}</td> <td>${yearly.toFixed(2)}</td> <td>${totalResult}`;
+        let rowEntry = document.createElement("tr");
+        rowEntry.innerHTML = rowHTML;
+        children.push(rowEntry);
+
+
+
         totalsTable.replaceChildren(...children);
+
       }
-      return data.count;
+
     } else {
       message.textContent = data.msg;
       return 0;
@@ -121,7 +123,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const addingActivity = document.getElementById("adding-activity");
   const activitiesMessage = document.getElementById("activities-message");
   const editCancel = document.getElementById("edit-cancel");
-  const header = document.getElementById("header")
+  const subheader = document.getElementById("subheader");
+  const weekly = document.getElementById("weekly");
+  const yearly = document.getElementById("yearly");
+  const allTime = document.getElementById("alltime");
 
   // section 2 
 
@@ -132,6 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
     token = sessionStorage.getItem("token");
     if (token) {
       //if the user is logged in
+
       totals.style.display = "block";
       logoff.style.display = "block";
       const count = await buildActivitysTable(
@@ -140,7 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
         token,
         message
       )
-      
+
       await buildtotalsTable(
         totalsTable,
         totalsTableHeader,
@@ -216,7 +222,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         const data = await response.json();
         if (response.status === 200) {
-          
+
           subheader.textContent = `Welcome ${data.user.name}!`;
           left.display = "hidden"
           token = data.token;
@@ -228,6 +234,7 @@ document.addEventListener("DOMContentLoaded", () => {
           document.dispatchEvent(thisEvent);
         } else {
           message.textContent = data.msg;
+
         }
       } catch (err) {
         message.textContent = "A communications error occurred.";
@@ -380,10 +387,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const data = await response.json();
         console.log(data)
         if (response.status === 200) {
-          activityName.value = data.activity.activityName; 
-          reps.value = data.activity.reps; 
-          weight.value = data.activity.weight  
-          liftType.value = data.activity.liftType; 
+          activityName.value = data.activity.activityName;
+          reps.value = data.activity.reps;
+          weight.value = data.activity.weight
+          liftType.value = data.activity.liftType;
           showing.style.display = "none";
           showing = editActivity;
           showing.style.display = "block";
@@ -416,10 +423,10 @@ document.addEventListener("DOMContentLoaded", () => {
           showing.style.display = "none";
           thisEvent = new Event("startDisplay");
           document.dispatchEvent(thisEvent);
-          activityName.value = ""; 
-          reps.value = ""; 
-          weight.value = "";  
-          liftType.value = ""; 
+          activityName.value = "";
+          reps.value = "";
+          weight.value = "";
+          liftType.value = "";
         } else {
           // might happen if the list has been updated since last display
           message.textContent = "The activity was not found";
@@ -431,5 +438,5 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       suspendInput = false;
     }
-})
-  });
+  })
+});

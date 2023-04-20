@@ -81,11 +81,10 @@ img {
 #activities,
 #edit-activity {
     background-color: white;
-    margin: 1%;
+    padding: 15px;
 }
 
 #activities-table {
-    margin-top: -17px;
     padding: 10px;
     table-layout: fixed;
     max-width: 100%;
