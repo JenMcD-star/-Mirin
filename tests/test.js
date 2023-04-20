@@ -47,53 +47,40 @@ describe("Activities", () => {
                 });
         });
     })
-    })
+})
 
-    //things I've tried 
-   /*
-    1. this returns an 401 which makes sense.
+
+describe('tests with auth', () => {
+    let token;
+    // this runs before all the tests in this describe block
+    before(async () => {
+        const response = await chai.request(app)
+            .post('/api/v1/auth/login')
+            .send({ email: 'user@user.com', password: 'test!!!!' });
+        token = response.body.token
+        console.log(token)
+    });
 
     it("should create an activity entry with valid input", (done) => {
         chai
             .request(app)
             .post("/api/v1/activities")
+            .auth(token, { type: 'bearer' })
             .send({ activityName: "Lift Test", liftType: 'Core', weight: 1, reps: 1 })
             .end((err, res) => {
                 res.should.have.status(201);
                 done();
             });
     })
------------------------------------------------------------
-2. the tests won't run with this- I think I'm using the before wrong?
-
-    const userCredentials = {
-    email: 'user@user.com', 
-    password: 'user!!!!'
-}
-  var authenticatedUser = request.agent(app);before(function(done){
-    authenticatedUser
-      .post('/api/v1/auth/login')
-      .send(userCredentials)
-      .end(function(err, response){
-        expect(response.statusCode).to.equal(200);
-        done();
-      });
-  });
-------------------------------------------------------------------------
-3. this returns an error of undefined agent
-
-var agent = chai.request.agent(app)
-agent
-  .post('api/v1/login')
-  .send({ username: 'user@user.com', password: 'user!!!!' })
-  .then(function (res) {
-    expect(res).to.have.cookie('sessionid');
-    return agent
-    .post('/api/v1/activities')
-    .sent({activityName: 'Lift Test', liftType: 'Core'}, weight: 1, reps: 1})
-      .then(function (res) {
-         expect(res).to.have.status(201);
-      });
-  });
-
-*/
+    it("should not create an activity entry without valid input", (done) => {
+        chai
+            .request(app)
+            .post("/api/v1/activities")
+            .auth(token, { type: 'bearer' })
+            .send({ activityName: "Lift Fail Test" })
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            })
+    })
+})
