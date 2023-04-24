@@ -21,7 +21,6 @@ async function buildActivitysTable(activitiesTable, activitiesTableHeader, token
           let rowEntry = document.createElement("tr");
           rowEntry.innerHTML = rowHTML;
           children.push(rowEntry);
-
         }
 
         activitiesTable.replaceChildren(...children);
@@ -50,6 +49,15 @@ async function buildtotalsTable(totalsTable, totalTableHeader, token, message) {
     const data = await response.json();
     var children = [totalTableHeader];
     let total = [];
+    let yearTotal = [];
+    let weekTotal = [];
+    const d = new Date();
+
+    let prevMonday = new Date();
+    prevMonday.setDate(prevMonday.getDate() - (prevMonday.getDay() + 6) % 7);
+    prevMonday = prevMonday.toISOString().substring(0, 10)
+
+    let thisYear = d.getFullYear();
     if (response.status === 200) {
       if (data.count === 0) {
         totalsTable.replaceChildren(...children); // clear this for safety
@@ -60,16 +68,31 @@ async function buildtotalsTable(totalsTable, totalTableHeader, token, message) {
           let reps = data.activities[i].reps;
           let result = weight * reps;
           total.push(result)
+          let date = data.activities[i].date
+          let year = Number(date.substring(0, 4))
+          let week = date.substring(0, 10)
+
+          if (year === thisYear) {
+            yearTotal.push(result)
+          }
+
+          if (week >= prevMonday) {
+            weekTotal.push(result)
+          }
         }
 
         let totalResult = total.reduce(function (a, b) {
           return a + b;
         }, 0);
+        let yearResult = yearTotal.reduce(function (a, b) {
+          return a + b;
+        }, 0)
+        let weekResult = weekTotal.reduce(function (a, b) {
+          return a + b;
+        }, 0)
 
-        let weekly = (totalResult / 7);
-        let yearly = (totalResult / 365)
 
-        let rowHTML = `<td>${weekly.toFixed(2)}</td> <td>${yearly.toFixed(2)}</td> <td>${totalResult}`;
+        let rowHTML = `<td>${weekResult}</td> <td>${yearResult}</td> <td>${totalResult}`;
         let rowEntry = document.createElement("tr");
         rowEntry.innerHTML = rowHTML;
         children.push(rowEntry);
@@ -77,6 +100,7 @@ async function buildtotalsTable(totalsTable, totalTableHeader, token, message) {
 
 
         totalsTable.replaceChildren(...children);
+
 
       }
 
@@ -124,9 +148,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const activitiesMessage = document.getElementById("activities-message");
   const editCancel = document.getElementById("edit-cancel");
   const subheader = document.getElementById("subheader");
-  const weekly = document.getElementById("weekly");
-  const yearly = document.getElementById("yearly");
-  const allTime = document.getElementById("alltime");
 
   // section 2 
 
@@ -135,9 +156,11 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("startDisplay", async () => {
     showing = logonRegister;
     token = sessionStorage.getItem("token");
+    id = sessionStorage.getItem("createdBy")
+
     if (token) {
       //if the user is logged in
-
+      subheader.innerText = "Welcome!"
       totals.style.display = "block";
       logoff.style.display = "block";
       const count = await buildActivitysTable(
@@ -172,6 +195,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.dispatchEvent(thisEvent);
   var suspendInput = false;
 
+
   // section 3
   document.addEventListener("click", async (e) => {
     if (suspendInput) {
@@ -181,6 +205,7 @@ document.addEventListener("DOMContentLoaded", () => {
       message.textContent = "";
     }
     if (e.target === logoff) {
+      subheader.innerText = "Log In or Register"
       totals.style.display = "none"
       sessionStorage.removeItem("token");
       token = null;
