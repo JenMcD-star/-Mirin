@@ -8,7 +8,7 @@ async function buildActivitysTable(activitiesTable, activitiesTableHeader, token
       },
     });
     const data = await response.json();
-    var children = [activitiesTableHeader];
+    var children = [];
     if (response.status === 200) {
       if (data.count === 0) {
         activitiesTable.replaceChildren(...children); // clear this for safety
@@ -17,12 +17,17 @@ async function buildActivitysTable(activitiesTable, activitiesTableHeader, token
         for (let i = 0; i < data.activities.length; i++) {
           let editButton = `<td><button type="button" class="editButton" data-id=${data.activities[i]._id}>edit</button></td>`;
           let deleteButton = `<td><button type="button" class="deleteButton" data-id=${data.activities[i]._id}>delete</button></td>`;
-          let rowHTML = `<td>${data.activities[i].activityName}</td><td>${data.activities[i].liftType}</td><td>${data.activities[i].weight}</td><td>${data.activities[i].reps}</td>${editButton}${deleteButton}`;
-          let rowEntry = document.createElement("tr");
+          let rowHTML = ` <tr id="activities-table-header">
+          <th>Name</th>
+          <th>Lift Type</th>
+          <th>Weight</th>
+          <th>Reps</th>
+      </tr><td>${data.activities[i].activityName}</td><td>${data.activities[i].liftType}</td><td>${data.activities[i].weight}</td><td>${data.activities[i].reps}</td>${editButton}${deleteButton}`;
+          let rowEntry = document.createElement("table");
+          rowEntry.setAttribute('class', 'activitiesTables')
           rowEntry.innerHTML = rowHTML;
           children.push(rowEntry);
         }
-
         activitiesTable.replaceChildren(...children);
       }
       return data.count;
@@ -35,7 +40,6 @@ async function buildActivitysTable(activitiesTable, activitiesTableHeader, token
     return 0;
   }
 }
-
 
 async function buildtotalsTable(totalsTable, totalTableHeader, token, message) {
   try {
