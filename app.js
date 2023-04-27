@@ -8,6 +8,9 @@ const cors = require('cors');
 const xss = require('xss-clean');
 const rateLimiter = require('express-rate-limit');
 
+const swaggerUI = require('swagger-ui-express')
+const YAML = require('yamljs')
+const swaggerDocument = YAML.load('./swagger.yaml')
 
 const express = require('express');
 const app = express();
@@ -37,6 +40,9 @@ app.use(
     max: 100, // limit each IP to 100 requests per windowMs
   })
 );
+
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
+
 app.use(express.json());
 app.use(helmet());
 app.use(cors());
@@ -70,4 +76,4 @@ const start = async () => {
 };
 
 start();
-module.exports =  { app }
+module.exports = { app }
