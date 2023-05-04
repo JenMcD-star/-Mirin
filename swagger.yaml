@@ -1,0 +1,484 @@
+openapi: 3.0.0
+
+info:
+
+  title: Weightlifting API
+
+  contact: {}
+
+  version: '1.0'
+
+servers:
+
+- url: https://activities-api-weight-lifting-strava.onrender.com/api/v1
+
+  variables: {}
+
+paths:
+
+  /activities:
+
+    get:
+
+      tags:
+
+      - Activities
+
+      summary: Get all activities
+
+      operationId: Getallactivities
+
+      parameters: []
+
+      responses:
+
+        '200':
+
+          description: 'success'
+
+          headers: {}
+          content:
+           application/json:
+             schema:
+               type: array
+               items:
+                 type: object
+                 properties:
+                   id:
+                     type: number
+                   name:
+                     type: string
+        400:
+          description: Bad request
+
+      deprecated: false
+
+      security:
+
+      - bearer: []
+
+    post:
+
+      tags:
+
+      - Activities
+
+      summary: Create activity
+
+      operationId: Createactivity
+
+      parameters: []
+
+      requestBody:
+
+        description: ''
+
+        content:
+
+          application/json:
+
+            schema:
+            type: object
+  
+              allOf:
+
+              - $ref: '#/components/schemas/CreateactivityRequest'
+
+              - example:
+
+                  name: small test lift
+
+                  weight: '50'
+        required: true
+
+      responses:
+
+        '200':
+
+          description: ''
+
+          headers: {}
+
+      deprecated: false
+
+      security:
+
+      - bearer: []
+
+  '/activities/{id}:':
+
+    patch:
+
+      tags:
+
+      - Activities
+
+      summary: Edit activity
+
+      operationId: Editactivity
+
+      parameters:
+
+      - name: id
+
+        in: path
+
+        description: ''
+
+        required: true
+
+        style: simple
+
+        schema:
+
+          type: string
+
+      requestBody:
+
+        description: ''
+
+        content:
+
+          application/json:
+
+            schema:
+
+              allOf:
+
+              - $ref: '#/components/schemas/EditactivityRequest'
+
+              - example:
+
+                  weight: '2000'
+
+                  reps: '1'
+
+
+        required: true
+
+      responses:
+
+        '200':
+
+          description: ''
+
+          headers: {}
+
+      deprecated: false
+
+      security:
+
+      - bearer: []
+
+    delete:
+
+      tags:
+
+      - Activities
+
+      summary: Delete activity
+
+      operationId: Deleteactivity
+
+      parameters:
+
+      - name: id
+
+        in: path
+
+        description: ''
+
+        required: true
+
+        style: simple
+
+        schema:
+
+          type: string
+
+      responses:
+
+        '200':
+
+          description: ''
+
+          headers: {}
+
+      deprecated: false
+
+      security:
+
+      - bearer: []
+
+  /auth/register:
+
+    post:
+
+      tags:
+
+      - Auth
+
+      summary: register
+
+      operationId: register
+
+      parameters: []
+
+      requestBody:
+
+        description: ''
+
+        content:
+
+          application/json:
+
+            schema:
+
+              allOf:
+
+              - $ref: '#/components/schemas/registerrequest'
+
+              - example:
+                  email: yes@testemail.com
+                  password: Jpassword
+
+
+        required: true
+
+      responses:
+
+        '200':
+
+          description: ''
+
+          headers: {}
+
+      deprecated: false
+
+      security: []
+
+  /auth/login:
+
+    post:
+
+      tags:
+
+      - Auth
+
+      summary: Login User
+
+      operationId: LoginUser
+
+      parameters: []
+
+      requestBody:
+
+        description: ''
+
+        content:
+
+          application/json:
+
+            schema:
+
+              allOf:
+
+              - $ref: '#/components/schemas/LoginUserRequest'
+
+              - example:
+
+                  name: yes
+
+                  email: yea@testemail.com
+
+                  password: Jpassword
+
+        required: true
+
+      responses:
+
+        '200':
+
+          description: ''
+
+          headers: {}
+
+      deprecated: false
+
+      security: []
+
+components:
+
+  schemas:
+
+    CreateactivityRequest:
+
+      title: CreateactivityRequest
+
+      required:
+
+      - name
+
+      - weight
+
+      type: object
+
+      properties:
+
+        name:
+
+          type: string
+
+        weight:
+
+          type: string
+
+      example:
+
+        name: small test lift
+
+        weight: '50'
+
+    EditactivityRequest:
+
+      title: EditactivityRequest
+
+      required:
+
+      - weight
+
+      - reps
+
+      type: object
+
+      properties:
+
+        weight:
+
+          type: string
+
+        reps:
+
+          type: string
+
+      example:
+
+        weight: '2000'
+
+        reps: '1'
+
+    registerrequest:
+
+      title: registerrequest
+
+      required:
+
+      - password
+
+      type: object
+
+      properties:
+
+        password:
+
+          type: string
+
+      example:
+
+        password: Jpassword
+
+    LoginUserRequest:
+
+      title: LoginUserRequest
+
+      required:
+
+      - name
+
+      - email
+
+      - password
+
+      type: object
+
+      properties:
+
+        name:
+
+          type: string
+
+        email:
+
+          type: string
+
+        password:
+
+          type: string
+
+      example:
+
+        name: yes
+
+        email: yea@testemail.com
+
+        password: Jpassword
+
+    NewRequestRequest:
+
+      title: NewRequestRequest
+
+      required:
+
+      - name
+
+      - email
+
+      - password
+
+      type: object
+
+      properties:
+
+        name:
+
+          type: string
+
+        email:
+
+          type: string
+
+        password:
+
+          type: string
+
+      example:
+
+        name: yes
+
+        email: yea@testemail.com
+
+        password: Jpassword
+
+  securitySchemes:
+
+    bearer:
+
+      type: http
+
+      scheme: bearer
+
+security: []
+
+tags:
+
+- name: Misc
+
+  description: ''
+
+- name: Activities
+
+  description: ''
+
+- name: Auth
+
+  description: ''

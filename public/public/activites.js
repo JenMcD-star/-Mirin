@@ -8,7 +8,7 @@ async function buildActivitysTable(activitiesTable, activitiesTableHeader, token
       },
     });
     const data = await response.json();
-    var children = [activitiesTableHeader];
+    var children = [];
     if (response.status === 200) {
       if (data.count === 0) {
         activitiesTable.replaceChildren(...children); // clear this for safety
@@ -17,8 +17,14 @@ async function buildActivitysTable(activitiesTable, activitiesTableHeader, token
         for (let i = 0; i < data.activities.length; i++) {
           let editButton = `<td><button type="button" class="editButton" data-id=${data.activities[i]._id}>edit</button></td>`;
           let deleteButton = `<td><button type="button" class="deleteButton" data-id=${data.activities[i]._id}>delete</button></td>`;
-          let rowHTML = `<td>${data.activities[i].activityName}</td><td>${data.activities[i].liftType}</td><td>${data.activities[i].weight}</td><td>${data.activities[i].reps}</td>${editButton}${deleteButton}`;
-          let rowEntry = document.createElement("tr");
+          let rowHTML = ` <tr id="activities-table-header">
+          <th>Name</th>
+          <th>Lift Type</th>
+          <th>Weight</th>
+          <th>Reps</th>
+      </tr><td>${data.activities[i].activityName}</td><td>${data.activities[i].liftType}</td><td>${data.activities[i].weight}</td><td>${data.activities[i].reps}</td>${editButton}${deleteButton}`;
+          let rowEntry = document.createElement("table");
+          rowEntry.setAttribute('class', 'activitiesTables')
           rowEntry.innerHTML = rowHTML;
           children.push(rowEntry);
         }
@@ -34,6 +40,84 @@ async function buildActivitysTable(activitiesTable, activitiesTableHeader, token
     return 0;
   }
 }
+
+async function buildtotalsTable(totalsTable, totalTableHeader, token, message) {
+  try {
+    const response = await fetch("/api/v1/activities", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await response.json();
+    var children = [totalTableHeader];
+    let total = [];
+    let yearTotal = [];
+    let weekTotal = [];
+    const d = new Date();
+
+    let prevMonday = new Date();
+    prevMonday.setDate(prevMonday.getDate() - (prevMonday.getDay() + 6) % 7);
+    prevMonday = prevMonday.toISOString().substring(0, 10)
+
+    let thisYear = d.getFullYear();
+    if (response.status === 200) {
+      if (data.count === 0) {
+        totalsTable.replaceChildren(...children); // clear this for safety
+        return 0;
+      } else {
+        for (let i = 0; i < data.activities.length; i++) {
+          let weight = `${data.activities[i].weight}`;
+          let reps = data.activities[i].reps;
+          let result = weight * reps;
+          total.push(result)
+          let date = data.activities[i].date
+          let year = Number(date.substring(0, 4))
+          let week = date.substring(0, 10)
+
+          if (year === thisYear) {
+            yearTotal.push(result)
+          }
+
+          if (week >= prevMonday) {
+            weekTotal.push(result)
+          }
+        }
+
+        let totalResult = total.reduce(function (a, b) {
+          return a + b;
+        }, 0);
+        let yearResult = yearTotal.reduce(function (a, b) {
+          return a + b;
+        }, 0)
+        let weekResult = weekTotal.reduce(function (a, b) {
+          return a + b;
+        }, 0)
+
+
+        let rowHTML = `<td>${weekResult}</td> <td>${yearResult}</td> <td>${totalResult}`;
+        let rowEntry = document.createElement("tr");
+        rowEntry.innerHTML = rowHTML;
+        children.push(rowEntry);
+
+
+
+        totalsTable.replaceChildren(...children);
+
+
+      }
+
+    } else {
+      message.textContent = data.msg;
+      return 0;
+    }
+  } catch (err) {
+    message.textContent = "A communication error occurred.";
+    return 0;
+  }
+}
+
 
 document.addEventListener("DOMContentLoaded", () => {
   const logoff = document.getElementById("logoff");
@@ -56,6 +140,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const activities = document.getElementById("activities");
   const activitiesTable = document.getElementById("activities-table");
   const activitiesTableHeader = document.getElementById("activities-table-header");
+  const totalsTable = document.getElementById("totals-table")
+  const totalsTableHeader = document.getElementById("totals-table-header")
   const addActivity = document.getElementById("add-activity");
   const editActivity = document.getElementById("edit-activity");
   const activityName = document.getElementById("activity-name")
@@ -65,7 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const addingActivity = document.getElementById("adding-activity");
   const activitiesMessage = document.getElementById("activities-message");
   const editCancel = document.getElementById("edit-cancel");
-  const header = document.getElementById("header")
+  const subheader = document.getElementById("subheader");
 
   // section 2 
 
@@ -74,14 +160,23 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("startDisplay", async () => {
     showing = logonRegister;
     token = sessionStorage.getItem("token");
+    id = sessionStorage.getItem("createdBy")
+
     if (token) {
       //if the user is logged in
-      header.innerHTML = 'Home';
+      subheader.innerText = "Welcome!"
       totals.style.display = "block";
       logoff.style.display = "block";
       const count = await buildActivitysTable(
         activitiesTable,
         activitiesTableHeader,
+        token,
+        message
+      )
+
+      await buildtotalsTable(
+        totalsTable,
+        totalsTableHeader,
         token,
         message
       );
@@ -94,6 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       activities.style.display = "block";
       showing = activities;
+
     } else {
       logonRegister.style.display = "block";
     }
@@ -102,6 +198,7 @@ document.addEventListener("DOMContentLoaded", () => {
   var thisEvent = new Event("startDisplay");
   document.dispatchEvent(thisEvent);
   var suspendInput = false;
+
 
   // section 3
   document.addEventListener("click", async (e) => {
@@ -112,6 +209,8 @@ document.addEventListener("DOMContentLoaded", () => {
       message.textContent = "";
     }
     if (e.target === logoff) {
+      subheader.innerText = "Log In or Register"
+      totals.style.display = "none"
       sessionStorage.removeItem("token");
       token = null;
       showing.style.display = "none";
@@ -152,8 +251,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         const data = await response.json();
         if (response.status === 200) {
-          
-          header.innerHTML = 'Home'
+
           subheader.textContent = `Welcome ${data.user.name}!`;
           left.display = "hidden"
           token = data.token;
@@ -165,6 +263,7 @@ document.addEventListener("DOMContentLoaded", () => {
           document.dispatchEvent(thisEvent);
         } else {
           message.textContent = data.msg;
+
         }
       } catch (err) {
         message.textContent = "A communications error occurred.";
@@ -317,10 +416,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const data = await response.json();
         console.log(data)
         if (response.status === 200) {
-          activityName.value = data.activity.activityName; 
-          reps.value = data.activity.reps; 
-          weight.value = data.activity.weight  
-          liftType.value = data.activity.liftType; 
+          activityName.value = data.activity.activityName;
+          reps.value = data.activity.reps;
+          weight.value = data.activity.weight
+          liftType.value = data.activity.liftType;
           showing.style.display = "none";
           showing = editActivity;
           showing.style.display = "block";
@@ -353,10 +452,10 @@ document.addEventListener("DOMContentLoaded", () => {
           showing.style.display = "none";
           thisEvent = new Event("startDisplay");
           document.dispatchEvent(thisEvent);
-          activityName.value = ""; 
-          reps.value = ""; 
-          weight.value = "";  
-          liftType.value = ""; 
+          activityName.value = "";
+          reps.value = "";
+          weight.value = "";
+          liftType.value = "";
         } else {
           // might happen if the list has been updated since last display
           message.textContent = "The activity was not found";
@@ -368,5 +467,5 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       suspendInput = false;
     }
-})
-  });
+  })
+});

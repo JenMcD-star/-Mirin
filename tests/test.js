@@ -1,7 +1,8 @@
 const chai = require("chai");
 const chaiHttp = require("chai-http");
 const { app, server } = require("../app");
-
+var expect = require('chai').expect;
+var request = require('supertest');
 chai.use(chaiHttp);
 chai.should();
 
@@ -45,5 +46,41 @@ describe("Activities", () => {
                     done();
                 });
         });
+    })
+})
+
+
+describe('tests with auth', () => {
+    let token;
+    // this runs before all the tests in this describe block
+    before(async () => {
+        const response = await chai.request(app)
+            .post('/api/v1/auth/login')
+            .send({ email: 'user@user.com', password: 'test!!!!' });
+        token = response.body.token
+        console.log(token)
+    });
+
+    it("should create an activity entry with valid input", (done) => {
+        chai
+            .request(app)
+            .post("/api/v1/activities")
+            .auth(token, { type: 'bearer' })
+            .send({ activityName: "Lift Test", liftType: 'Core', weight: 1, reps: 1 })
+            .end((err, res) => {
+                res.should.have.status(201);
+                done();
+            });
+    })
+    it("should not create an activity entry without valid input", (done) => {
+        chai
+            .request(app)
+            .post("/api/v1/activities")
+            .auth(token, { type: 'bearer' })
+            .send({ activityName: "Lift Fail Test" })
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            })
     })
 })
