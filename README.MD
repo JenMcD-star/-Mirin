@@ -14,7 +14,7 @@ npm install && npm start
 #### Routers
 
 - auth.js
-- jobs.js
+- activities.js
 
 #### User Model
 
@@ -65,5 +65,5 @@ Swagger UI
       schema:
         type: string
       required: true
-      description: the job id
+      description: the activity id
 ```
